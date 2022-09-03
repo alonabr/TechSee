@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="chat-wrapper">
     <div class="users">
       <UsersComponent :users="computedUsers" :online-user="computedUser" />
@@ -24,7 +24,7 @@
 <script lang="ts">
 import { UserModel } from '@/models/userModel';
 import { computed } from '@vue/reactivity';
-import { defineComponent, onMounted, PropType, reactive } from 'vue'
+import { defineComponent, onMounted, PropType, reactive, watch } from 'vue'
 import { useStore } from '@/store';
 import  UsersComponent from '@/components/UsersComponent.vue'
 import  ChatBoxComponent from '@/components/ChatBoxComponent.vue'
@@ -52,27 +52,27 @@ export default defineComponent({
       message: ''
     })
 
-    const socket = io('http://localhost:3000')
+    //const socket = io('http://localhost:3000')
 
-    socket.on('initChat', (messages: MessageModel[]) => {
-      store.commit('SET_ALL_MESSAGES', messages);
-    })
+    // socket.on('initChat', (messages: MessageModel[]) => {
+    //   store.commit('SET_ALL_MESSAGES', messages);
+    // })
 
-    socket.on('userAdded', (users: UserModel[]) => {
-      computedUsers.value = users;
-    })
+    // socket.on('userAdded', (users: UserModel[]) => {
+    //   computedUsers.value = users;
+    // })
 
-    socket.on('userRemoved', (users: UserModel[]) => {
-      computedUsers.value = users;
-    })
+    // socket.on('userRemoved', (users: UserModel[]) => {
+    //   computedUsers.value = users;
+    // })
 
-    socket.on('newMessage', (message: MessageModel) => {
-       store.commit('SET_NEW_MESSAGE', message);
-    })
+    // socket.on('newMessage', async (message: MessageModel) => {
+    //    await store.dispatch("sendMessage", { message });
+    // })
 
     onMounted(async () => {
-      await store.dispatch("fetchUsers");
-      joinToChat()
+      //await store.dispatch("fetchUsers");
+      //joinToChat()
     })
 
     const computedUser = computed<UserModel>(() => {
@@ -85,13 +85,24 @@ export default defineComponent({
     })
 
     const computedMessages = computed<MessageModel[]>(() => store.getters.getMessages)
-    
-    const joinToChat = () => {
-      socket.emit('enterUsername', { username: store.getters.getUser })
-    }
 
-    const sendMessage = () => {
-      form.message = '' //TODO change it after message was sent
+    watch(computedMessages, (newMessages: MessageModel[], oldMessages: MessageModel[]) => {
+      if(newMessages.length > oldMessages.length) {
+      //scroller
+      }
+    })
+    
+    // const joinToChat = () => {
+    //   socket.emit('enterUsername', { username: store.getters.getUser })
+    // }
+
+    const sendMessage = async () => {
+      const message: MessageModel = {
+        username: store.getters.currentUser,
+        message: form.message
+      }
+      await store.dispatch("sendMessage");
+      form.message = ''
     }
 
     return {
@@ -153,4 +164,4 @@ export default defineComponent({
   flex:1;
 }
 
-</style>
+</style> -->

@@ -1,5 +1,5 @@
 <template>
-  <div class="login-wrapper">
+  <div class="login-wrapper" v-if="!isLoggedIn">
     <el-form :model="userModel" label-width="120px" class="form-container">
     <el-form-item label="Username">
       <el-input v-model="userModel.username" />
@@ -9,51 +9,64 @@
     </el-form-item>
   </el-form>
   </div>
+  <div v-else>
+    <chat-component />
+  </div>
 </template>
 
  <script lang="ts">
 import { UserModel } from '@/models/userModel'
 import router from '@/router';
 import { useStore } from '@/store';
-import { computed, defineComponent, onMounted, PropType, watch } from 'vue'
+import { computed, defineComponent, onMounted, PropType, ref, watch } from 'vue'
+import ChatComponent from '@/components/ChatComponent.vue'
   
   export default defineComponent({
     name: 'Login',
+    components:{
+      ChatComponent
+    },
     props: {
-      userModel: {
-        type: Object as PropType<UserModel>,
-        required:true,
-        default: ""
-       },
       errorLoginMsg: {
         type: String,
         required: true,
       },
     },
-
+    
     setup(props) {
       const store = useStore();
+      const userModel = ref({}as UserModel);
       
       const login = async () => {
         const user = {
-          username: props.userModel.username
+          username: userModel.value.username
         }as UserModel
-        await store.dispatch("fetchUser");
+        await store.dispatch("setLoginUser", user);
       }
+
+      // const username = computed<UserModel>({ 
+      //   get() { return store.getters.getUser },
+      //   set(value: any) { userModel.value.username }
+      // })
 
       const fetchUser = computed<UserModel>(() => { 
         return store.getters.getUser 
       })
 
-      watch(fetchUser, (newUser: UserModel) => {
-         if(newUser && newUser.username) {
-           router.push('/chat')
-         } else {
-          alert("failed to login");
-         }
-       })
+      const isLoggedIn = computed<boolean>(() => { 
+        return store.getters.isLoggedIn
+      })
 
-      return { login, fetchUser }
+      // watch(fetchUser, (newUser: UserModel) => {
+      //    if(newUser && newUser.username) {
+      //     console.log('Logged in' + newUser.username)
+      //      router.push('/chat')
+      //    } else {
+      //     alert("failed to login");
+      //    }
+      //  })
+
+      return { login, fetchUser, userModel, isLoggedIn }
     },
   })
   </script>

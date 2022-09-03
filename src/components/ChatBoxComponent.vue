@@ -1,7 +1,7 @@
 <template>
   <div class="chat-wrapper" ref="chatArea">
       <div class="chat-message-item" ref="refscrollHeight">
-        <div class="message-item" v-for="message in messages" :key="message.id">
+        <div class="message-item" v-for="(message, index) in messages" :key="index">
           <div class="h-message-item">
             <b class="message-user">{{ message.username }} </b>
             <p class="message-text" >
@@ -21,27 +21,26 @@ import { defineComponent, nextTick, onUpdated, PropType, ref } from 'vue';
     name: 'ChatBoxComponent',
     props: {
     messages: {
-      type: Object as PropType<MessageModel[]>,
+      type: Array as PropType<MessageModel[]>,
       required: true
     },
-    
   },
   setup(props) {
-    let chatArea : any = ref(null)
-    let refscrollHeight: any = ref(null)
-    const update = () => {
-      nextTick(() => {
-        chatArea.value?.scrollTo({
-          behavior: 'smooth',
-          top: refscrollHeight.value.clientHeight,
-        })
-      })
-    }
+    //let chatArea : any = ref(null)
+    //let refscrollHeight: any = ref(null)
+    // const update = () => {
+    //   nextTick(() => {
+    //     chatArea.value?.scrollTo({
+    //       behavior: 'smooth',
+    //       top: refscrollHeight.value.clientHeight,
+    //     })
+    //   })
+    // }
 
-    onUpdated(update);
+    // onUpdated(update);
 
     return {
-      update,
+      //update,
     }
   }
   })

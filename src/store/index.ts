@@ -2,60 +2,97 @@ import { createStore, Store, useStore as baseUseStore } from 'vuex'
 import { UserModel } from '@/models/userModel'
 import { InjectionKey } from 'vue'
 import axios from 'axios'
+import { io } from 'socket.io-client'
+import { MessageModel } from '@/models/messageModel'
+
+
+//const data = await axios.get('http://localhost:3000//api/v1/socket/users');
 
 export interface State {
   currentUser: UserModel | null,
-  users: UserModel[] 
+  loggedIn: boolean
+  users: UserModel[],
+  messages: MessageModel[]
 }
 
 export const key: InjectionKey<Store<State>> = Symbol()
+const socket = io('http://localhost:3000')
+
+socket.on('userLoggedIn', (username: string) => {
+  store.commit('SET_USER', username)
+})
+
+socket.on('getUsers', (users: UserModel[]) => {
+  store.commit('SET_USERS', users)
+})
+
+socket.on('getMessages', (messages: MessageModel[]) => {
+  store.commit('SET_MESSAGES', messages)
+})
+
+socket.on('newMessage', (message: MessageModel) => {
+  const messages = [...store.state.messages, message]
+  store.commit('SET_MESSAGES', messages)
+})
 
 export const store = createStore<State>({
   state: {
     currentUser: null,
-    users: []
+    loggedIn: false,
+    users: [],
+    messages: []
   },
   getters: {
     getUser: (state) : UserModel | null => state.currentUser,
-    getUsers: (state) : UserModel[] => state.users || [] as UserModel[]
+    isLoggedIn: (state) : boolean => state.loggedIn,
+    getUsers: (state) : UserModel[] => state.users || [] as UserModel[],
+    getMessages: (state) : MessageModel[] => state.messages || [] as MessageModel[]
   },
   mutations: {
     SET_USER(state, user) {
-      state.currentUser = user
+      state.currentUser = user;
+      state.loggedIn = true;
     },
     SET_USERS(state, users) {
       state.users = users
+    },
+    SET_MESSAGES(state, messages) {
+      state.messages = messages
     }
   },
   actions: {
-    async fetchUser({ commit }) {
+    async setLoginUser({ }, user: UserModel) {
       try {
-        const data = await axios.get('https://jsonplaceholder.typicode.com/user')
-        commit('SET_USER', data.data)
+        socket.emit('enterUsername', { username: user.username })
       } catch(error: any) {
         alert(error)
         console.log(error)
       }
     },
-    async fetchUsers({ commit }) {
+    async fetchUsers() {
       try {
-        //const data = await axios.get('https://jsonplaceholder.typicode.com/users')
-        await new Promise(r => setTimeout(r, 2000))
-        const data: any = {}
-        data.data = [
-          {
-            username: 'alon'
-          },
-          {
-            username: 'moshe'
-          }
-        ]as UserModel[]
-        commit('SET_USERS', data.data)
+        const res: any = socket.emit('getUsers');
       } catch(error: any) {
         alert(error)
         console.log(error)
       }
-    }
+    },
+    async fetchMessages() {
+      try{
+        const res: any = socket.emit('getMessages');
+      }catch(error) {
+        alert(error)
+        console.log(error)
+      }
+    },
+    async sendMessage({}, message) {
+      try{
+        const res: any = socket.emit('newMessage', message);
+      }catch(error) {
+        alert(error)
+        console.log(error)
+      }
+    },
   },
   modules: {
   }

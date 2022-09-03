@@ -1,8 +1,8 @@
 <template>
   <div class="users-box">
     <h3 class="users-headline">ONLINE USERS:</h3>
-    <ul class="users-list" v-for="user in users" :key="user.username">
-      <li class="user-list-item">{{ (user.username) }}</li>
+    <ul class="users-list" v-for="(user, index) in users" :key="index">
+      <li class="user-list-item">{{ user }}</li>
     </ul>
   </div>
 </template>
@@ -16,7 +16,7 @@ import { defineComponent, PropType } from 'vue';
     name: 'Users',
     props: {
       users: {
-        type: Object as PropType<UserModel[]>,
+        type: Array,
         required:true
        },
        onlineUser: {
@@ -29,4 +29,6 @@ import { defineComponent, PropType } from 'vue';
     }
   })
 </script>
-  
+
+<style lang="scss" scoped>  
+  </style>
