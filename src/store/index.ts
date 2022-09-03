@@ -35,6 +35,11 @@ socket.on('newMessage', (message: MessageModel) => {
   store.commit('SET_MESSAGES', messages)
 })
 
+socket.on('userDisconnected', (user: UserModel) => {
+  const users = store.state.users.filter(u => u !== user)
+  store.commit('SET_USERS', users)
+})
+
 export const store = createStore<State>({
   state: {
     currentUser: null,

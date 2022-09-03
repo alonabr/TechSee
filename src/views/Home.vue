@@ -16,7 +16,6 @@
 
  <script lang="ts">
 import { UserModel } from '@/models/userModel'
-import router from '@/router';
 import { useStore } from '@/store';
 import { computed, defineComponent, onMounted, PropType, ref, watch } from 'vue'
 import ChatComponent from '@/components/ChatComponent.vue'
@@ -44,11 +43,6 @@ import ChatComponent from '@/components/ChatComponent.vue'
         await store.dispatch("setLoginUser", user);
       }
 
-      // const username = computed<UserModel>({ 
-      //   get() { return store.getters.getUser },
-      //   set(value: any) { userModel.value.username }
-      // })
-
       const fetchUser = computed<UserModel>(() => { 
         return store.getters.getUser 
       })
@@ -56,15 +50,6 @@ import ChatComponent from '@/components/ChatComponent.vue'
       const isLoggedIn = computed<boolean>(() => { 
         return store.getters.isLoggedIn
       })
-
-      // watch(fetchUser, (newUser: UserModel) => {
-      //    if(newUser && newUser.username) {
-      //     console.log('Logged in' + newUser.username)
-      //      router.push('/chat')
-      //    } else {
-      //     alert("failed to login");
-      //    }
-      //  })
 
       return { login, fetchUser, userModel, isLoggedIn }
     },

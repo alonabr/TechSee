@@ -64,11 +64,11 @@
   
       const computedMessages = computed<MessageModel[]>(() => store.getters.getMessages)
   
-      // watch(computedMessages, (newMessages: MessageModel[], oldMessages: MessageModel[]) => {
-      //   if(newMessages.length > oldMessages.length) {
-      //   //scroller
-      //   }
-      // })
+      watch(computedMessages, (newMessages: MessageModel[], oldMessages: MessageModel[]) => {
+        if(newMessages.length > oldMessages.length) {
+          
+        }
+      })
   
       const sendMessage = async () => {
         const message: MessageModel = {
